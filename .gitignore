@@ -1,104 +1,32 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import csv
 
-# C extensions
-*.so
+with open('ReporteEnero2018.csv') as csv_file: #archivo .CSV Limpio
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+    csv_reader = csv.reader(csv_file, delimiter=',') #Lecura de archivo
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+    llamadasAtendidas=0
+    TiempoDeEspera=0
+    llamadasASoporte=0
+    TiempoAtendido=0
+    for linea in csv_reader:
+        interno=linea[1]
+        if interno in linea[1] and "720" not in linea[3]: #Espera en queue
+            for row in linea:
+                if row=="ANSWERED":
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+                    llamadasAtendidas+=1
+                    TiempoAtendido+=int(linea[8].split("s")[0])
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
 
-# Translations
-*.mo
-*.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
+        if "720" in linea[3]:#llamadas al IVR
+            llamadasASoporte+=1
 
-# Flask stuff:
-instance/
-.webassets-cache
+            TiempoDeEspera+=int(linea[8].split("s")[0])#Suma del tiempo del IVR hasya que atendio la queue o corto
+    PromEspera=((TiempoDeEspera-TiempoAtendido)/llamadasASoporte)/60
+    NoAtendidas=llamadasASoporte-llamadasAtendidas
+    PorcentajeNoAtendidas=(NoAtendidas/llamadasASoporte)*100
+    print("Llamadas a soporte: ",llamadasASoporte,"\nLlamadas atendidas: ",llamadasAtendidas,"\nLlamadas no atendidas/Cortadas por la espera: ",NoAtendidas,"\nTiempo de espera promedio: ",PromEspera, "minutos","\nPorcentaje de no atendidas: %",PorcentajeNoAtendidas )
 
-# Scrapy stuff:
-.scrapy
 
-# Sphinx documentation
-docs/_build/
 
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
